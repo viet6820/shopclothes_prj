@@ -1,0 +1,123 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace NCC
+{
+    public partial class Form1 : Form
+    {
+        SqlConnection con;
+        //SqlCommand cmd;
+        //string str = @"Data Source=ADMINMI-9VCM1KU\SQLEXPRESS02;Initial Catalog=QLBH;Integrated Security=True";
+        //SqlDataAdapter adapter = new SqlDataAdapter();
+        //DataTable table = new DataTable();
+        //void HienThi()
+        //{
+        //    cmd = con.CreateCommand();//X? lý k?t n?i
+        //    cmd.CommandText = "select * from NCC";
+        //    adapter.SelectCommand = cmd;//Th?c thi câu truy v?n
+        //    table.Clear();
+        //    adapter.Fill(table);//Chuy?n d? li?u vào b?ng
+        //    dataGridView1.DataSource = table;
+
+        //}
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'qLBHDataSet.NCC' table. You can move, or remove it, as needed.
+            this.nCCTableAdapter.Fill(this.qLBHDataSet.NCC);
+            con = new SqlConnection(@"Data Source=ADMINMI-9VCM1KU\SQLEXPRESS02;Initial Catalog=QLBH;Integrated Security=True");
+            con.Open();
+            HienThi();
+        }
+        void HienThi()
+        {
+            string sqlselect = "SELECT *FROM NCC";
+            SqlCommand cmd = new SqlCommand(sqlselect, con);//Truy v?n d? li?u
+            SqlDataReader dr = cmd.ExecuteReader();//Ð?c d? li?u
+            DataTable dt = new DataTable();
+            dt.Load(dr);
+            dataGridView1.DataSource = dt;
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            int a;
+            a = dataGridView1.CurrentRow.Index;
+            txtmancc.Text = dataGridView1.Rows[a].Cells[0].Value.ToString();
+            txttenncc.Text = dataGridView1.Rows[a].Cells[1].Value.ToString();
+            txtdiachi.Text = dataGridView1.Rows[a].Cells[2].Value.ToString();
+            txtsdt.Text = dataGridView1.Rows[a].Cells[3].Value.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string sqlinsert = "INSERT INTO NCC VALUES('" + txtmancc.Text + "','" + txttenncc.Text + "','" + txtdiachi.Text + "','" + txtsdt.Text + "')";
+            SqlCommand cmd = new SqlCommand(sqlinsert, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+            MessageBox.Show("Thêm thành công !!", "Thông báo!!");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string sqldelete = "delete from NCC where MaNCC= '" + txtmancc.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqldelete, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+            //MessageBox.Show("Xóa thành công !!", "Thông báo!!");
+
+        }
+
+        private void sua_Click(object sender, EventArgs e)
+        {
+            string sqlupdate = "update NCC set TenNCC= N'" + txttenncc.Text + "',DiaChi= N'" + txtdiachi.Text + "',SDT= N'" + txtsdt.Text + "' where MaNCC = '" + txtmancc.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqlupdate, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+            MessageBox.Show("S?a thành công !!", "Thông báo!!");
+        }
+
+        private void taomoi_Click(object sender, EventArgs e)
+        {
+            txtmancc.Text= "";
+            txttenncc.Text = "";
+            txtdiachi.Text = "";
+            txtsdt.Text = "";
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            con.Close();
+        }
+
+        private void timkiem_Click(object sender, EventArgs e)
+        {
+            string sqlsearch = "SELECT *FROM NCC  where MaNCC = '" + txttimkiem.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqlsearch, con);
+            SqlDataReader dr = cmd.ExecuteReader();//Ð?c d? li?u
+            DataTable dt = new DataTable();
+            dt.Load(dr);
+            dataGridView1.DataSource = dt;
+        }
+    }
+}
