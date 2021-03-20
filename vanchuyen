@@ -1,0 +1,126 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace NCC
+{
+    public partial class frmvanchuyen : Form
+    {
+        public frmvanchuyen()
+        {
+            InitializeComponent();
+        }
+        SqlConnection con;
+        private void frmvanchuyen_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'qLBHDataSet7.vanchuyen' table. You can move, or remove it, as needed.
+            this.vanchuyenTableAdapter.Fill(this.qLBHDataSet7.vanchuyen);
+            con = new SqlConnection(@"Data Source=ADMINMI-9VCM1KU\SQLEXPRESS02;Initial Catalog=QLBH;Integrated Security=True");
+            con.Open();
+            HienThi();
+        }
+        void HienThi()
+        {
+            string Sqlselect = "SELECT *FROM vanchuyen";
+            SqlCommand cmd = new SqlCommand(Sqlselect, con);//Truy v?n d? li?u
+            SqlDataReader dr = cmd.ExecuteReader();// Ð?c d? li?u
+            DataTable dt = new DataTable();
+            dt.Load(dr);
+            dataGridView1.DataSource = dt;
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int a;
+            a = dataGridView1.CurrentRow.Index;
+            txtmavc.Text = dataGridView1.Rows[a].Cells[0].Value.ToString();
+            txtmadon.Text = dataGridView1.Rows[a].Cells[1].Value.ToString();
+            txtdiachi.Text = dataGridView1.Rows[a].Cells[2].Value.ToString();
+            dt_ngaygiao.Text = dataGridView1.Rows[a].Cells[3].Value.ToString();
+            txtghichu.Text = dataGridView1.Rows[a].Cells[4].Value.ToString();
+            cb_bengh.Text = dataGridView1.Rows[a].Cells[5].Value.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            frmtaodon don = new frmtaodon();
+            don.ShowDialog();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            frmdoitacvc dtvc = new frmdoitacvc();
+            dtvc.ShowDialog();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            frmKH kh= new frmKH();
+            kh.ShowDialog();
+           
+        }
+
+        private void them_Click(object sender, EventArgs e)
+        {
+            string sqlinsert = "INSERT INTO vanchuyen VALUES('" + txtmavc.Text + "','" + txtmadon.Text + "','" + txtdiachi.Text + "','" + dt_ngaygiao.Text + "','"+txtghichu.Text+"','"+cb_bengh.Text+"')";
+            SqlCommand cmd = new SqlCommand(sqlinsert, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+            MessageBox.Show("Thêm thành công !!", "Thông báo!!");
+        }
+
+        private void taomoi_Click(object sender, EventArgs e)
+        {
+            txtmavc.Text = "";
+            txtmadon.Text = "";
+            txtdiachi.Text = "";
+            dt_ngaygiao.Text = "";
+            txtghichu.Text = "";
+            cb_bengh.Text = "";
+        }
+
+        private void xoa_Click(object sender, EventArgs e)
+        {
+            string sqldelete = "delete from vanchuyen where mavc= '" + txtmavc.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqldelete, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+        }
+
+        private void sua_Click(object sender, EventArgs e)
+        {
+            string sqlupdate = "update vanchuyen set madon= N'" + txtmadon.Text + "',diachi= N'" + txtdiachi.Text + "' , ngaygiao='" + dt_ngaygiao.Text + "',ghichu='"+txtghichu.Text+"',bengh='"+cb_bengh.Text+"' where mavc ='" + txtmavc.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqlupdate, con);
+            cmd.ExecuteNonQuery();
+            HienThi();
+            MessageBox.Show("S?a thành công !!", "Thông báo!!");
+        }
+
+        private void thoat_Click(object sender, EventArgs e)
+        {
+            base.Close();
+        }
+
+        private void timkiem_Click(object sender, EventArgs e)
+        {
+            string sqlsearch = "SELECT *FROM vanchuyen  where mavc = '" + txttimkiem.Text + "'";
+            SqlCommand cmd = new SqlCommand(sqlsearch, con);
+            SqlDataReader dr = cmd.ExecuteReader();//Ð?c d? li?u
+            DataTable dt = new DataTable();
+            dt.Load(dr);
+            dataGridView1.DataSource = dt;
+        }
+
+        private void frmvanchuyen_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            con.Close();
+        }
+    }
+}
